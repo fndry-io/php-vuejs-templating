@@ -10,6 +10,7 @@ use DOMNode;
 use DOMNodeList;
 use DOMText;
 use Exception;
+use Illuminate\Support\Arr;
 use LibXMLError;
 
 use WMDE\VueJsTemplating\FilterExpressionParsing\FilterParser;
@@ -240,10 +241,20 @@ class Component {
 			list( $itemName, $listName ) = explode( ' in ', $node->getAttribute( 'v-for' ) );
 			$node->removeAttribute( 'v-for' );
 
-			foreach ( $data[$listName] as $item ) {
+			$values = Arr::get($data, trim($listName));
+			$itemName = explode(',', str_replace(array( '(', ')' ),'', $itemName));
+
+			foreach ( $values as $key => $item ) {
 				$newNode = $node->cloneNode( true );
 				$node->parentNode->insertBefore( $newNode, $node );
-				$this->handleNode( $newNode, array_merge( $data, [ $itemName => $item ] ) );
+
+				$arr = [];
+				$arr[$itemName[0]] = $item;
+
+				if(sizeof($itemName) > 1)
+				    $arr[$itemName[1]] = $key;
+
+				$this->handleNode( $newNode, array_merge( $data, $arr ) );
 			}
 
 			$this->removeNode( $node );

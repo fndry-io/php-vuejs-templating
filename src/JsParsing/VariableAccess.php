@@ -25,10 +25,29 @@ class VariableAccess implements ParsedExpression {
 		$value = $data;
 		foreach ( $this->pathParts as $key ) {
 			if ( !array_key_exists( $key, $value ) ) {
-				$expression = implode( '.', $this->pathParts );
-				throw new RuntimeException( "Undefined variable '{$expression}'" );
-			}
-			$value = $value[$key];
+			    if(strpos($key, '${')){
+                    preg_match('#{.*?}#', $key, $matches);
+                    if(sizeof($matches)){
+                        $string = $key;
+                        foreach ($matches as $match){
+                            $prop = trim(ltrim(rtrim($match,'}'), '{'));
+                            if(array_key_exists( $prop, $value )){
+                                $string = str_replace("$$match", $value[$prop], $string);
+                            }else{
+                                throw new RuntimeException( "Undefined variable '{$prop}'" );
+                            }
+                        }
+                    }
+                    $value = $string;
+                }else{
+                    $expression = implode( '.', $this->pathParts );
+
+                    throw new RuntimeException( "Undefined variable '{$expression}'" );
+                }
+
+			}else{
+                $value = $value[$key];
+            }
 		}
 		return $value;
 	}
