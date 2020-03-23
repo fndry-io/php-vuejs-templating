@@ -38,7 +38,9 @@ class VariableAccess implements ParsedExpression {
                             }
                         }
                     }
+
                     $value = ltrim(rtrim($string,'`'), '`');
+
                 }else{
                     $expression = implode( '.', $this->pathParts );
 
