@@ -182,7 +182,7 @@ class Component {
 				->evaluate( $data );
 
 			$name = substr( $attribute->name, 1 );
-			if ( is_bool( $value ) ) {
+			if ( is_bool( $value ) || is_null( $value ) ) {
 				if ( $value ) {
 					$node->setAttribute( $name, $name );
 				}
@@ -241,7 +241,7 @@ class Component {
 			list( $itemName, $listName ) = explode( ' in ', $node->getAttribute( 'v-for' ) );
 			$node->removeAttribute( 'v-for' );
 
-			$values = Arr::get($data, trim($listName));
+			$values = $this->expressionParser->parse($listName)->evaluate($data);
 			$itemName = explode(',', str_replace(array( '(', ')' ),'', $itemName));
 
 			foreach ( $values as $key => $item ) {
