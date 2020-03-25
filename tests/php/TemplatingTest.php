@@ -175,7 +175,25 @@ class TemplatingTest extends TestCase {
 		assertThat( $result, is( equalTo( '<p>some ABC message</p>' ) ) );
 	}
 
-	/**
+    /**
+     * @test
+     */
+    public function templateWithTruthfulDotConditionInIf_IsNotRemoved() {
+        $result = $this->createAndRender( '<p><a v-if="var.variable"></a></p>', [ 'var' => ['variable' => true] ] );
+
+        assertThat( $result, is( equalTo( '<p><a></a></p>' ) ) );
+    }
+
+    /**
+     * @test
+     */
+    public function templateWithTruthfulDotConditionInIf_IsRemoved() {
+        $result = $this->createAndRender( '<p><a v-if="var.variable"></a></p>', [ 'var' => ['variable' => false] ] );
+
+        assertThat( $result, is( equalTo( '<p></p>' ) ) );
+    }
+
+    /**
 	 * @test
 	 */
 	public function templateWithTruthfulConditionInIf_IsNotRemoved() {
@@ -279,6 +297,15 @@ class TemplatingTest extends TestCase {
 
 		assertThat( $result, is( equalTo( '<p></p>' ) ) );
 	}
+
+    /**
+     * @test
+     */
+    public function templateWithAttributeBinding_ConditionIsNull_AttributeIsNotRendered() {
+        $result = $this->createAndRender( '<p :attr1="condition"></p>', [ 'condition' => null ] );
+
+        assertThat( $result, is( equalTo( '<p></p>' ) ) );
+    }
 
 	/**
 	 * @test
