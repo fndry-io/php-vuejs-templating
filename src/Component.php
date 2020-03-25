@@ -171,8 +171,16 @@ class Component {
 	}
 
 	private function handleAttributeBinding( DOMElement $node, array $data ) {
+	    $attributes = [];
 		/** @var DOMAttr $attribute */
 		foreach ( iterator_to_array( $node->attributes ) as $attribute ) {
+
+		    if(!isset($attributes[$attribute->name]))
+		        $attributes[$attribute->name] = $attribute->value;
+		    else{
+		        $attributes[$attributes->name] = $attributes[$attributes->name]. $attribute->value;
+            }
+
 			if ( !preg_match( '/^:[\w-]+$/', $attribute->name ) ) {
 				continue;
 			}
@@ -182,11 +190,14 @@ class Component {
 				->evaluate( $data );
 
 			$name = substr( $attribute->name, 1 );
+
 			if ( is_bool( $value ) ) {
 				if ( $value ) {
-					$node->setAttribute( $name, $name );
+					$node->setAttribute( $name, $value );
 				}
 			} else {
+			    if(isset($attributes[$name]))
+			        $value = $attributes[$name].' '. $value;
 				$node->setAttribute( $name, $value );
 			}
 			$node->removeAttribute( $attribute->name );

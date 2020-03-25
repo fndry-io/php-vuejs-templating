@@ -13,6 +13,7 @@ class BasicJsExpressionParser implements JsExpressionParser {
 	public function parse( $expression ) {
 
 		$expression = $this->normalizeExpression( $expression );
+
 		if ( strncmp( $expression, '!', 1 ) === 0 ) {
 			return new NegationOperator( $this->parse( substr( $expression, 1 ) ) );
 		} elseif ( strncmp( $expression, "'", 1 ) === 0 ) {
@@ -23,8 +24,21 @@ class BasicJsExpressionParser implements JsExpressionParser {
             return  new OrOperator(explode('||', $expression));
         }
 		else {
-			$parts = explode( '.', $expression );
-			return new VariableAccess( $parts );
+            if(strpos($expression, '${')){
+                return  new AttributeVariable($expression);
+            }elseif(strpos($expression, '==') > 0 || strpos($expression, '===') > 0){
+                $sign = strpos($expression, '===') > 0? '===': '==';
+                return  new EqualityOperator(explode($sign, $expression), $sign === '=='? 'equality': 'identity');
+            }elseif (strpos($expression, '||') > 0){
+                return new OrOperator(explode('||', $expression));
+            }elseif (strpos($expression, '&&') > 0){
+                return new AndOperator(explode('&&', $expression));
+            }else{
+                $parts = explode( '.', $expression );
+                return new VariableAccess( $parts );
+            }
+
+
 		}
 	}
 
