@@ -385,7 +385,17 @@ class TemplatingTest extends TestCase {
 		return $templating->render( $template, $data, $filters );
 	}
 
-	/**
+    /**
+     * @test
+     */
+    public function templateWithAttributeBinding_ContainsLiterals_CorrectValueIsRendered() {
+        $result = $this->createAndRender( '<p :attr1="`${first}_${last}_${dob.year}`"></p>', [ 'first' => 'FIRST', 'last' => 'LAST', 'dob' => ['year' => 2020] ] );
+
+        assertThat( $result, is( equalTo( '<p attr1="FIRST_LAST_2020"></p>' ) ) );
+    }
+
+
+    /**
 	 * @todo Cover following cases
 	 *
 	 * Valid template:

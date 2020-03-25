@@ -24,8 +24,8 @@ class BasicJsExpressionParser implements JsExpressionParser {
             return  new OrOperator(explode('||', $expression));
         }
 		else {
-            if(strpos($expression, '${')){
-                return  new AttributeVariable($expression);
+            if(strpos($expression, '${') !== false){
+                return  new AttributeVariable($expression, $this);
             }elseif(strpos($expression, '==') > 0 || strpos($expression, '===') > 0){
                 $sign = strpos($expression, '===') > 0? '===': '==';
                 return  new EqualityOperator(explode($sign, $expression), $sign === '=='? 'equality': 'identity');

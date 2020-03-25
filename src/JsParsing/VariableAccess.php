@@ -2,7 +2,6 @@
 
 namespace WMDE\VueJsTemplating\JsParsing;
 
-use RuntimeException;
 
 class VariableAccess implements ParsedExpression {
 
@@ -26,7 +25,7 @@ class VariableAccess implements ParsedExpression {
         foreach ( $this->pathParts as $key ) {
             if ( !array_key_exists( $key, $value ) ) {
                 $expression = implode( '.', $this->pathParts );
-                throw new RuntimeException( "Undefined variable '{$expression}'" );
+                throw new \RuntimeException( "Undefined variable '{$expression}'" );
             }
             $value = $value[$key];
         }
