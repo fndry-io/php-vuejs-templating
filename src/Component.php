@@ -291,7 +291,9 @@ class Component {
 
 			$newNode = $node->cloneNode( true );
 
-			$this->appendHTML( $newNode, $data[$variableName] );
+			$html = $this->expressionParser->parse($variableName)->evaluate($data);
+
+			$this->appendHTML( $newNode, $html );
 
 			$node->parentNode->replaceChild( $newNode, $node );
 		}
