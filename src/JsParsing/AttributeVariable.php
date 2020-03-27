@@ -9,8 +9,14 @@ class AttributeVariable implements ParsedExpression {
 	 */
 	private $expression;
 
-	public function __construct( $expression ) {
+    /**
+     * @var JsExpressionParser
+     */
+	private $expressionParser;
+
+	public function __construct( $expression, JsExpressionParser $expressionParser ) {
 		$this->expression = $expression;
+		$this->expressionParser = $expressionParser;
 	}
 
 	/**
@@ -19,20 +25,15 @@ class AttributeVariable implements ParsedExpression {
 	 * @return string as provided on construction time
 	 */
 	public function evaluate( array $data ) {
-
-        preg_match('#{.*?}#', $this->expression, $matches);
+        $matches = [];
+        preg_match_all('/\${(.*?)}/', $this->expression, $matches);
         $string = $this->expression;
-        if(sizeof($matches)){
-            foreach ($matches as $match){
-                $prop = trim(ltrim(rtrim($match,'}'), '{'));
-                if(array_key_exists( $prop, $data )){
-                    $string = str_replace("$$match", $data[$prop], $string);
-                }else{
-                    throw new RuntimeException( "Undefined variable '{$prop}'" );
-                }
+        if(isset($matches[1]) && sizeof($matches[1])){
+            foreach ($matches[1] as $match){
+                $value = $this->expressionParser->parse($match)->evaluate($data);
+                $string = str_replace('${' . $match . '}', $value, $string);
             }
         }
-
         return ltrim(rtrim($string,'`'), '`');
 	}
 
