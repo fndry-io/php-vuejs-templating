@@ -254,18 +254,20 @@ class Component {
 			$values = $this->expressionParser->parse($listName)->evaluate($data);
 			$itemName = explode(',', str_replace(array( '(', ')' ),'', $itemName));
 
-			foreach ( $values as $key => $item ) {
-				$newNode = $node->cloneNode( true );
-				$node->parentNode->insertBefore( $newNode, $node );
+			if (is_array($values)) {
+                foreach ( $values as $key => $item ) {
+                    $newNode = $node->cloneNode( true );
+                    $node->parentNode->insertBefore( $newNode, $node );
 
-				$arr = [];
-				$arr[$itemName[0]] = $item;
+                    $arr = [];
+                    $arr[$itemName[0]] = $item;
 
-				if(sizeof($itemName) > 1)
-				    $arr[$itemName[1]] = $key;
+                    if(sizeof($itemName) > 1)
+                        $arr[$itemName[1]] = $key;
 
-				$this->handleNode( $newNode, array_merge( $data, $arr ) );
-			}
+                    $this->handleNode( $newNode, array_merge( $data, $arr ) );
+                }
+            }
 
 			$this->removeNode( $node );
 		}
